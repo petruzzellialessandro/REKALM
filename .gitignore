@@ -4,3 +4,4 @@ DataPreprocessing/data/*/*.txt
 DataPreprocessing/notebooks/*_all_items.ipynb
 DataPreprocessing/notebooks/*_all_items_special.ipynb
 DataPreprocessing/notebooks/train_adaptation.csv
+DataPreprocessing/notebooks/PreprocessingBoardGames.ipynb
