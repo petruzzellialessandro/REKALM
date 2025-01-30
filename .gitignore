@@ -1,5 +1,5 @@
 .venv
 DataPreprocessing/data/*/*all_items*
 DataPreprocessing/data/*/*.txt
-DataPreprocessing/notebooks/*all_items*.ipynb
+DataPreprocessing/notebooks/*all_items*
 DataPreprocessing/notebooks/train_adaptation.csv
