@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+.venv
+DataPreprocessing/data/*/*.txt
+notebooks/*all_items*.ipynb
+notebooks/train_adaptation.csv
