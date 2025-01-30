@@ -1,7 +1,7 @@
 # Empowering Recommender Systems based on Large Language Models through Knowledge Injection Techniques
 ![Alt text](img/Architecture.png)
 
-## LoRA Hyperparameter
+## LoRA Hyperparameters
 | **Parameter**               | **Value**         |
 |-----------------------------|-------------------|
 | r                           | $64$              |
