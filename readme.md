@@ -3,7 +3,7 @@
 ![Architecture](img/Architecture.png)
 
 ## Table of Contents
-1. [Introduction](#introduction)
+1. [Abstract](#Abstract)
 2. [Datasets Information](#datasets-information)
 3. [Apriori Algorithm Parameters](#apriori-algorithm-parameters)
 4. [LoRA Hyperparameters](#lora-hyperparameters)
@@ -136,7 +136,7 @@ The training process consists of three main steps:
 ### Merging the Adapter with the Base Model
 2. **Merge the LoRA Adapter with the Base Model**
    ```sh
-   singularity exec --nv llm_cuda121.sif python main_merged.py
+   singularity exec --nv llm_cuda121.sif python main_merge.py
    ```
    - Ensure correct settings in `config_merge.py`.
    - This step creates a fine-tuned model by merging the adapter with the base model.
