@@ -75,4 +75,15 @@ If you wish to generate the files yourself, follow these steps:
    - Run the `dbpedia_quering.py` script located in the `notebooks/` folder.
    - Ensure you update the dataset selection at the beginning of the script for each dataset.
 
-Once these steps are completed, you can proceed with fine-tuning and evaluation.
+4. **Creation of Dataset**
+   The folder contains notebooks for each base configuration (e.g., collaborative, graph, text-based approaches). The following three notebooks are provided:
+   
+    - `Process_text_candidate.ipynb`: Processes text information.
+    - `Process_graph_candidate.ipynb`: Handles graph information.
+    - `Process_collaborative_candidate.ipynb`: Processes collaborative information.
+
+   The first cell of each notebook contains a variable named `domain`, which allows the selection of the dataset. By running all the cells in a notebook, a JSON file for fine-tuning the LLM, along with a test set, will be created in the corresponding domain folder inside `data/`.
+
+5. **Creating Training Sets for Ablation Studies**
+   To create the training set used for ablation studies (merging different knowledge sources), run all cells in the `Merge_sources_candidate.ipynb` notebook. This will combine different sources and generate a merged dataset.
+
