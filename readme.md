@@ -76,6 +76,8 @@ The repository is structured into the following main components:
 ---
 
 ## Data Preprocessing
+> **Note:** All necessary files for fine-tuning the model are already in the `data/` folder.
+
 The `DataPreprocessing` directory contains:
 - `data/`: Includes datasets and generated JSON files for fine-tuning.
 - `llama3/`: Contains the Llama 3 tokenizer.
