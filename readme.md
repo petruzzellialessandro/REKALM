@@ -3,28 +3,55 @@
 ![Architecture](img/Architecture.png)
 
 ## Table of Contents
-1. [Extra Information about Datasets](#extra-information-about-datasets)
-2. [Apriori Parameters](#apriori-parameters)
-3. [LoRA Hyperparameters](#lora-hyperparameters)
-4. [Repository Structure](#repository-structure)
-5. [Data Preprocessing](#data-preprocessing)
-   - [How to Set Up](#how-to-set-up)
+1. [Introduction](#introduction)
+2. [Datasets Information](#datasets-information)
+3. [Apriori Algorithm Parameters](#apriori-algorithm-parameters)
+4. [LoRA Hyperparameters](#lora-hyperparameters)
+5. [Repository Structure](#repository-structure)
+6. [Data Preprocessing](#data-preprocessing)
+   - [Setting Up the Environment](#setting-up-the-environment)
+   - [Generating Training Data](#generating-training-data)
+7. [Large Language Model (LLM) Training and Inference](#large-language-model-llm-training-and-inference)
+   - [Creating the Singularity Container](#creating-the-singularity-container)
+   - [Training the Model](#training-the-model)
+   - [Merging the Adapter with the Base Model](#merging-the-adapter-with-the-base-model)
+   - [Performing Inference](#performing-inference)
 
-## Extra Information about Datasets
+---
+
+## Abstract
+Recommender systems (RSs) have become increasingly versatile, finding applications across diverse domains. %As shown by several works, 
+Large Language Models (LLMs) significantly contribute to this advancement since the vast amount of knowledge embedded in these models can be easily exploited to provide users with high-quality recommendations.
+However, current RSs based on LLMs have room for improvement. As an example, *knowledge injection* techniques can be used to fine-tune LLMs by incorporating additional data, thus improving their performance on downstream tasks. In a recommendation setting, these techniques can be exploited to incorporate further knowledge, which can result in a more accurate representation of the items.
+Accordingly, in this paper, we propose a pipeline for knowledge injection specifically designed for RS. First,  we incorporate external knowledge by drawing on three sources: *(a)* knowledge graphs; *(b)* textual descriptions; *(c)* collaborative information about user interactions. Next, we lexicalize the knowledge, and we instruct and fine-tune an LLM, which can then be easily to return a list of recommendations. Extensive experiments on movie, music, and book datasets validate our approach. Moreover, the experiments showed that knowledge injection is particularly needed in domains (*i.e.,* music and books) that are likely to be less covered by the data used to pre-train LLMs, thus leading the way to several future research directions.
+
+---
+
+## Datasets Information
+The following datasets are used in this project:
+
 | Dataset       | Users | Items | Ratings | Sparsity  |
 |--------------|-------|-------|---------|-----------|
 | Last.FM      | 1881  | 2828  | 71,426  | 98.66%    |
 | DBbook       | 5660  | 6698  | 129,513 | 99.66%    |
 | MovieLens 1M | 6036  | 3081  | 946,120 | 94.91%    |
 
-## Apriori Parameters
+---
+
+## Apriori Algorithm Parameters
+The Apriori algorithm is used for extracting association rules. Below are the parameters for each dataset:
+
 | Dataset       | Support  | Confidence | Extracted Rules |
 |--------------|----------|------------|-----------------|
 | Last.FM      | 0.0015   | 0.002      | 13,391          |
 | DBbook       | 0.0003   | 0.001      | 13,245          |
 | MovieLens 1M | 0.01     | 0.05       | 62,521          |
 
+---
+
 ## LoRA Hyperparameters
+LoRA (Low-Rank Adaptation) is used to fine-tune the LLM. The hyperparameters used are:
+
 | **Parameter**               | **Value**         |
 |-----------------------------|-------------------|
 | r                           | 64               |
@@ -38,52 +65,88 @@
 | per device train batch size | 4                |
 | optimizer                   | AdamW (Torch)    |
 
+---
+
 ## Repository Structure
-The repository is organized into three main parts:
-- **Data Preprocessing**: Handles both user data preprocessing and knowledge extraction.
-- **LLM Processing**: Includes code for fine-tuning and performing inference on the model.
-- **Output Refinement and Metrics Calculation**: Evaluates the performance of the recommender system.
+The repository is structured into the following main components:
+- **Data Preprocessing**: Handles dataset preprocessing and knowledge extraction.
+- **LLM**: Contains scripts for fine-tuning and inference.
+- **Metrics Calculation**: Evaluates the performance of the recommender system.
+
+---
 
 ## Data Preprocessing
-The `DataPreprocessing` folder is structured as follows:
-- `data/`: Contains a folder for each dataset along with extra files generated during setup. Each dataset folder includes all necessary files for generating the JSON file required for fine-tuning the model, along with the raw files used to create those JSONs.
-- `llama3/`: Contains the Llama 3 tokenizer (tokenizer only), which is used to correctly format the prompt.
-- `notebooks/`: Includes all notebooks needed to generate JSON files for fine-tuning the LLM.
-- `requirements.txt`: Lists all dependencies required for the project.
+The `DataPreprocessing` directory contains:
+- `data/`: Includes datasets and generated JSON files for fine-tuning.
+- `llama3/`: Contains the Llama 3 tokenizer.
+- `notebooks/`: Jupyter notebooks for processing text, graph, and collaborative data.
+- `requirements.txt`: Lists dependencies.
 
-### How to Set Up
-> **Note:** All necessary files for fine-tuning the model are already in the `data/` folder.
+### Setting Up the Environment
+1. Create a virtual environment (Python 3.10.12 recommended):
+   ```sh
+   python -m venv env
+   source env/bin/activate  # On Windows use `env\Scripts\activate`
+   ```
+2. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-If you wish to generate the files yourself, follow these steps:
-
+### Generating Training Data
 1. **Download Raw Text Files**
-   - Download the raw text files containing item descriptions from [this link](https://mega.nz/folder/TsMkQaAB#9vxYcaEZhLcr4005L-bbRg).
-   - Place the `.txt` files in the corresponding dataset folders.
+   - Obtain item descriptions from [this link](https://mega.nz/folder/TsMkQaAB#9vxYcaEZhLcr4005L-bbRg).
+   - Place `.txt` files in the corresponding dataset folders.
 
-2. **Set Up the Environment**
-   - Create a virtual environment (Python 3.10.12 recommended):
-     ```sh
-     python -m venv env
-     source env/bin/activate  # On Windows use `env\Scripts\activate`
-     ```
-   - Install the required dependencies:
-     ```sh
-     pip install -r requirements.txt
-     ```
+2. **Map DBpedia IDs to Items**
+   - Run `dbpedia_quering.py` in the `notebooks/` folder.
+   - Adjust dataset selection at the script’s beginning.
 
-3. **Map DBpedia IDs to Items**
-   - Run the `dbpedia_quering.py` script located in the `notebooks/` folder.
-   - Ensure you update the dataset selection at the beginning of the script for each dataset.
+3. **Create JSON Training Files**
+   - Run the following notebooks:
+     - `Process_text_candidate.ipynb`
+     - `Process_graph_candidate.ipynb`
+     - `Process_collaborative_candidate.ipynb`
+   - Select the dataset using the `domain` variable in the first cell.
+   - Generated JSON files are saved in the respective dataset folders under `data/`.
 
-4. **Creation of Dataset**
-   The folder contains notebooks for each base configuration (e.g., collaborative, graph, text-based approaches). The following three notebooks are provided:
-   
-    - `Process_text_candidate.ipynb`: Processes text information.
-    - `Process_graph_candidate.ipynb`: Handles graph information.
-    - `Process_collaborative_candidate.ipynb`: Processes collaborative information.
+4. **Create Training Sets for Ablation Studies**
+   - Execute `Merge_sources_candidate.ipynb` to merge knowledge sources into a unified dataset.
 
-   The first cell of each notebook contains a variable named `domain`, which allows the selection of the dataset. By running all the cells in a notebook, a JSON file for fine-tuning the LLM, along with a test set, will be created in the corresponding domain folder inside `data/`.
+---
 
-5. **Creating Training Sets for Ablation Studies**
-   To create the training set used for ablation studies (merging different knowledge sources), run all cells in the `Merge_sources_candidate.ipynb` notebook. This will combine different sources and generate a merged dataset.
+## Large Language Model (LLM) Training and Inference
+To efficiently train and run inference on the LLM, we recommend using a Singularity container.
 
+### Creating the Singularity Container
+The Singularity container is defined in `LLM/llm_cuda121.def`. To build the container:
+```sh
+sudo singularity build llm_cuda121.sif LLM/llm_cuda121.def
+```
+
+### Training the Model
+The training process consists of three main steps:
+1. **Train the LoRA Adapter**
+   ```sh
+   singularity exec --nv llm_cuda121.sif python main_train_task.py
+   ```
+   - Configure training parameters in `config_task.py`.
+   - This script produces a LoRA adapter instead of modifying the full model.
+
+### Merging the Adapter with the Base Model
+2. **Merge the LoRA Adapter with the Base Model**
+   ```sh
+   singularity exec --nv llm_cuda121.sif python main_merged.py
+   ```
+   - Ensure correct settings in `config_merge.py`.
+   - This step creates a fine-tuned model by merging the adapter with the base model.
+
+### Performing Inference
+3. **Run Inference**
+   ```sh
+   singularity exec --nv llm_cuda121.sif python main_inference_pipe.py
+   ```
+   - Modify `config_inference.py` as needed.
+   - The output file contains model responses for all test prompts.
+
+---

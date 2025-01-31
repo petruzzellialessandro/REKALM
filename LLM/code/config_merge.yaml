@@ -1,0 +1,9 @@
+seed: 22
+device: auto
+domain: books
+
+model: /meta-llama/Meta-Llama-3-8B
+peft_model_path: models/books/adapter/llama3_books_lora_adapter_collaborative
+output_dir: models/books/llama3_books_collaborative
+dtype: "bf16"
+attn_implementation: eager

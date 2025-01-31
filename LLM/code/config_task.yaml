@@ -1,0 +1,47 @@
+seed: 22
+device: cuda
+domain: books
+train_type: task_adapt
+dtype: bf16
+
+dataset:
+  data_folder: DataPreprocessing/data/dbbook
+  file_extension: json
+  file_name: dbbook_collaborative_kn_train_set.jsonl
+
+model: meta-llama/Meta-Llama-3-8B
+tokenizer: meta-llama/Meta-Llama-3-8B
+attn_implementation: flash_attention_2
+load_in_8bit: False
+load_in_4bit: False
+
+use_lora: False
+lora_parameters:
+  r: 64
+  lora_alpha: 128 # r * 2
+  lora_dropout: 0.1
+  target_modules: 'all-linear' #["v_proj", "q_proj", "k_proj"]
+  task_type: CAUSAL_LM
+
+SFTtrainer:
+  max_seq_length: 2048 # 4096
+  dataset_batch_size: 5_000 # 4
+  packing: True
+
+training_args:
+  learning_rate: 0.0001
+  gradient_checkpointing: True 
+  num_train_epochs: 10
+  per_device_train_batch_size: 4 # 4 
+  max_steps: -1
+  weight_decay: 0.0001
+  max_grad_norm: 1.0
+  logging_steps: 5
+  save_steps: 2000
+  save_on_each_node: False
+  auto_find_batch_size: False
+  optim: adamw_torch #paged_adamw_8bit #adamw_torch
+  output_dir: models/books/adapter/llama3_books_lora_adapter_collaborative
+  bf16: True
+  tf32: True
+  fp16: False

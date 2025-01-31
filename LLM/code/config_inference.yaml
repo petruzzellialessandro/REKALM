@@ -1,0 +1,23 @@
+seed: 22
+device: auto
+domain: books
+
+model: models/books/llama3_books_collaborative
+tokenizer: models/books/llama3_books_collaborative
+dtype: bf16
+attn_implementation: flash_attention_2
+batch_size: 8
+batch_start: 0
+output_dir: DataPreprocessing/data/dbbook
+out_file_name: results_llama3_collaborative
+
+dataset:
+  data_folder: DataPreprocessing/data/dbbook
+  file_extension: json
+  file_name: dbbook_test_set.jsonl
+
+generation_parameters:
+  max_new_tokens: 512
+  #num_beams: 5
+  #temperature: 0.3
+  #repetition_penalty: 1.2
