@@ -92,7 +92,7 @@ The `DataPreprocessing` directory contains:
    ```
 2. Install dependencies:
    ```sh
-   pip install -r requirements.txt
+   pip install -r req.txt
    ```
 
 ### Generating Training Data
@@ -132,7 +132,7 @@ The training process consists of three main steps:
    ```sh
    singularity exec --nv llm_cuda121.sif python main_train_task.py
    ```
-   - Configure training parameters in `config_task.py`.
+   - Configure training parameters in `config_task.yaml`.
    - This script produces a LoRA adapter instead of modifying the full model.
 
 ### Merging the Adapter with the Base Model
@@ -140,7 +140,7 @@ The training process consists of three main steps:
    ```sh
    singularity exec --nv llm_cuda121.sif python main_merge.py
    ```
-   - Ensure correct settings in `config_merge.py`.
+   - Ensure correct settings in `config_merge.yaml`.
    - This step creates a fine-tuned model by merging the adapter with the base model.
 
 ### Performing Inference
@@ -148,7 +148,7 @@ The training process consists of three main steps:
    ```sh
    singularity exec --nv llm_cuda121.sif python main_inference_pipe.py
    ```
-   - Modify `config_inference.py` as needed.
+   - Modify `config_inference.yaml` as needed.
    - The output file contains model responses for all test prompts.
 
 ---
