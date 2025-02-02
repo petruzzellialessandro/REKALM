@@ -22,6 +22,7 @@
 ---
 
 ## Abstract
+
 Recommender systems (RSs) have become increasingly versatile, finding applications across diverse domains. %As shown by several works, 
 Large Language Models (LLMs) significantly contribute to this advancement since the vast amount of knowledge embedded in these models can be easily exploited to provide users with high-quality recommendations.
 However, current RSs based on LLMs have room for improvement. As an example, *knowledge injection* techniques can be used to fine-tune LLMs by incorporating additional data, thus improving their performance on downstream tasks. In a recommendation setting, these techniques can be exploited to incorporate further knowledge, which can result in a more accurate representation of the items.
