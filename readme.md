@@ -27,6 +27,7 @@ Recommender systems (RSs) have become increasingly versatile, finding applicatio
 Large Language Models (LLMs) significantly contribute to this advancement since the vast amount of knowledge embedded in these models can be easily exploited to provide users with high-quality recommendations.
 However, current RSs based on LLMs have room for improvement. As an example, *knowledge injection* techniques can be used to fine-tune LLMs by incorporating additional data, thus improving their performance on downstream tasks. In a recommendation setting, these techniques can be exploited to incorporate further knowledge, which can result in a more accurate representation of the items.
 Accordingly, in this paper, we propose a pipeline for knowledge injection specifically designed for RS. First,  we incorporate external knowledge by drawing on three sources: *(a)* knowledge graphs; *(b)* textual descriptions; *(c)* collaborative information about user interactions. Next, we lexicalize the knowledge, and we instruct and fine-tune an LLM, which can then be easily to return a list of recommendations. Extensive experiments on movie, music, and book datasets validate our approach. Moreover, the experiments showed that knowledge injection is particularly needed in domains (*i.e.,* music and books) that are likely to be less covered by the data used to pre-train LLMs, thus leading the way to several future research directions.
+
 ---
 
 ## Datasets Information
