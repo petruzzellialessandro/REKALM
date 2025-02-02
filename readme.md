@@ -3,7 +3,7 @@
 ![Architecture](img/Architecture.png)
 
 ## Table of Contents
-1. [Abstract](#Abstract)
+1. [Abstract](#abstract)
 2. [Datasets Information](#datasets-information)
 3. [Apriori Algorithm Parameters](#apriori-algorithm-parameters)
 4. [LoRA Hyperparameters](#lora-hyperparameters)
@@ -16,6 +16,8 @@
    - [Training the Model](#training-the-model)
    - [Merging the Adapter with the Base Model](#merging-the-adapter-with-the-base-model)
    - [Performing Inference](#performing-inference)
+8. [Results Parsing](#results-parsing)
+9. [Metrics Calculation](#metrics-calculation)
 
 ---
 
@@ -24,7 +26,6 @@ Recommender systems (RSs) have become increasingly versatile, finding applicatio
 Large Language Models (LLMs) significantly contribute to this advancement since the vast amount of knowledge embedded in these models can be easily exploited to provide users with high-quality recommendations.
 However, current RSs based on LLMs have room for improvement. As an example, *knowledge injection* techniques can be used to fine-tune LLMs by incorporating additional data, thus improving their performance on downstream tasks. In a recommendation setting, these techniques can be exploited to incorporate further knowledge, which can result in a more accurate representation of the items.
 Accordingly, in this paper, we propose a pipeline for knowledge injection specifically designed for RS. First,  we incorporate external knowledge by drawing on three sources: *(a)* knowledge graphs; *(b)* textual descriptions; *(c)* collaborative information about user interactions. Next, we lexicalize the knowledge, and we instruct and fine-tune an LLM, which can then be easily to return a list of recommendations. Extensive experiments on movie, music, and book datasets validate our approach. Moreover, the experiments showed that knowledge injection is particularly needed in domains (*i.e.,* music and books) that are likely to be less covered by the data used to pre-train LLMs, thus leading the way to several future research directions.
-
 ---
 
 ## Datasets Information
@@ -39,7 +40,7 @@ The following datasets are used in this project:
 ---
 
 ## Apriori Algorithm Parameters
-The Apriori algorithm is used for extracting association rules. Below are the parameters for each dataset:
+The Apriori algorithm extracts association rules using the following parameters:
 
 | Dataset       | Support  | Confidence | Extracted Rules |
 |--------------|----------|------------|-----------------|
@@ -50,7 +51,7 @@ The Apriori algorithm is used for extracting association rules. Below are the pa
 ---
 
 ## LoRA Hyperparameters
-LoRA (Low-Rank Adaptation) is used to fine-tune the LLM. The hyperparameters used are:
+LoRA (Low-Rank Adaptation) is used to fine-tune the LLM with the following hyperparameters:
 
 | **Parameter**               | **Value**         |
 |-----------------------------|-------------------|
@@ -68,29 +69,18 @@ LoRA (Low-Rank Adaptation) is used to fine-tune the LLM. The hyperparameters use
 ---
 
 ## Repository Structure
-The repository is structured into the following main components:
-- **Data Preprocessing**: Handles dataset preprocessing and knowledge extraction.
-- **LLM**: Contains scripts for fine-tuning and inference.
-- **Metrics Calculation**: Evaluates the performance of the recommender system.
+- **DataPreprocessing/**: Preprocessing scripts and knowledge extraction.
+- **LLM/**: Scripts for fine-tuning and inference.
+- **MetricsCalculation/**: Scripts for evaluating the recommender system.
 
 ---
 
 ## Data Preprocessing
-> [!NOTE]
-> All necessary files for fine-tuning the model are already in the `data/` folder.
-
-
-The `DataPreprocessing` directory contains:
-- `data/`: Includes datasets and generated JSON files for fine-tuning.
-- `llama3/`: Contains the Llama 3 tokenizer.
-- `notebooks/`: Jupyter notebooks for processing text, graph, and collaborative data.
-- `requirements.txt`: Lists dependencies.
-
 ### Setting Up the Environment
 1. Create a virtual environment (Python 3.10.12 recommended):
    ```sh
    python -m venv env
-   source env/bin/activate  # On Windows use `env\Scripts\activate`
+   source env/bin/activate  # On Windows: `env\Scripts\activate`
    ```
 2. Install dependencies:
    ```sh
@@ -98,59 +88,74 @@ The `DataPreprocessing` directory contains:
    ```
 
 ### Generating Training Data
-1. **Download Raw Text Files**
-   - Obtain item descriptions from [this link](https://mega.nz/folder/TsMkQaAB#9vxYcaEZhLcr4005L-bbRg).
-   - Place `.txt` files in the corresponding dataset folders.
+1. **Download Item Descriptions**
+   - Obtain files from [this link](https://mega.nz/folder/TsMkQaAB#9vxYcaEZhLcr4005L-bbRg) and place them in dataset folders.
 
 2. **Map DBpedia IDs to Items**
    - Run `dbpedia_quering.py` in the `notebooks/` folder.
-   - Adjust dataset selection at the script’s beginning.
 
 3. **Create JSON Training Files**
-   - Run the following notebooks:
+   - Execute:
      - `Process_text_candidate.ipynb`
      - `Process_graph_candidate.ipynb`
      - `Process_collaborative_candidate.ipynb`
-   - Select the dataset using the `domain` variable in the first cell.
-   - Generated JSON files are saved in the respective dataset folders under `data/`.
+   - Select dataset using the `domain` variable.
 
 4. **Create Training Sets for Ablation Studies**
-   - Execute `Merge_sources_candidate.ipynb` to merge knowledge sources into a unified dataset.
+   - Run `Merge_sources_candidate.ipynb` to merge data sources.
 
 ---
 
 ## Large Language Model (LLM) Training and Inference
-To efficiently train and run inference on the LLM, we recommend using a Singularity container.
-
 ### Creating the Singularity Container
-The Singularity container is defined in `LLM/llm_cuda121.def`. To build the container:
 ```sh
 sudo singularity build llm_cuda121.sif LLM/llm_cuda121.def
 ```
 
 ### Training the Model
-The training process consists of three main steps:
-1. **Train the LoRA Adapter**
-   ```sh
-   singularity exec --nv llm_cuda121.sif python main_train_task.py
-   ```
-   - Configure training parameters in `config_task.yaml`.
-   - This script produces a LoRA adapter instead of modifying the full model.
+```sh
+singularity exec --nv llm_cuda121.sif python main_train_task.py
+```
+- Configure parameters in `config_task.yaml`.
 
 ### Merging the Adapter with the Base Model
-2. **Merge the LoRA Adapter with the Base Model**
-   ```sh
-   singularity exec --nv llm_cuda121.sif python main_merge.py
-   ```
-   - Ensure correct settings in `config_merge.yaml`.
-   - This step creates a fine-tuned model by merging the adapter with the base model.
+```sh
+singularity exec --nv llm_cuda121.sif python main_merge.py
+```
+- Configure settings in `config_merge.yaml`.
 
 ### Performing Inference
-3. **Run Inference**
+```sh
+singularity exec --nv llm_cuda121.sif python main_inference_pipe.py
+```
+- Adjust `config_inference.yaml`.
+
+---
+
+## Results Parsing
+Before calculating metrics, parse the inference results:
+1. Use the existing `env` from data preprocessing.
+2. Run `Parse_results.ipynb` in `DataPreprocessing/notebooks`.
+3. Select the appropriate file and dataset in the first cell.
+
+---
+
+## Metrics Calculation
+To evaluate model performance:
+1. Create a new environment:
    ```sh
-   singularity exec --nv llm_cuda121.sif python main_inference_pipe.py
+   python -m venv metrics_env
+   source metrics_env/bin/activate  # On Windows: `metrics_env\Scripts\activate`
    ```
-   - Modify `config_inference.yaml` as needed.
-   - The output file contains model responses for all test prompts.
+2. Install dependencies:
+   ```sh
+   pip install -r MetricsCalculation/Clayrsrequirements.txt
+   ```
+3. Run metric calculation script:
+   ```sh
+   python MetricsCalculation/metric_cal.py
+   ```
+   - Select the dataset in the script.
+   - Modify `models_name` to evaluate specific configurations.
 
 ---
