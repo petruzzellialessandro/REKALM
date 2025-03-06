@@ -1,0 +1,16 @@
+seed: 22
+device: auto
+domain: music
+
+model: models/music/llama3_music_lora_collaborative_graph_text
+tokenizer: models/music/llama3_music_lora_collaborative_graph_text
+dtype: bf16
+attn_implementation: flash_attention_2
+batch_size: 64
+batch_start: 0
+output_dir: DataPreprocessing/data/dbbook
+out_file_name: embedding_collaborative_graph_text.pkl
+
+dataset:
+  data_folder: DataPreprocessing/data
+  name: 'lastfm'
