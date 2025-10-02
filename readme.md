@@ -1,4 +1,4 @@
-# Empowering Recommender Systems based on Large Language Models through Knowledge Injection Techniques
+# Integrating Heterogeneous Knowledge for Enhanced Recommendation with Large Language Models
 
 ![Architecture](img/Architecture.png)
 
@@ -23,32 +23,32 @@
 
 ## Abstract
 
-Recommender systems (RSs) have become increasingly versatile, finding applications across diverse domains. %As shown by several works, 
-Large Language Models (LLMs) significantly contribute to this advancement since the vast amount of knowledge embedded in these models can be easily exploited to provide users with high-quality recommendations.
-However, current RSs based on LLMs have room for improvement. As an example, *knowledge injection* techniques can be used to fine-tune LLMs by incorporating additional data, thus improving their performance on downstream tasks. In a recommendation setting, these techniques can be exploited to incorporate further knowledge, which can result in a more accurate representation of the items.
-Accordingly, in this paper, we propose a pipeline for knowledge injection specifically designed for RS. First,  we incorporate external knowledge by drawing on three sources: *(a)* knowledge graphs; *(b)* textual descriptions; *(c)* collaborative information about user interactions. Next, we lexicalize the knowledge, and we instruct and fine-tune an LLM, which can then be easily to return a list of recommendations. Extensive experiments on movie, music, and book datasets validate our approach. Moreover, the experiments showed that knowledge injection is particularly needed in domains (*i.e.,* music and books) that are likely to be less covered by the data used to pre-train LLMs, thus leading the way to several future research directions.
+The integration of Large Language Models (LLMs) into recommender systems has introduced a new paradigm wherein models leverage their extensive pre-trained knowledge to generate personalized suggestions. A prevailing assumption is that an LLM's inherent knowledge is a sufficient foundation for high-quality recommendations across diverse domains. This paper challenges that assumption, positing that in specialized domains, recommendation efficacy is fundamentally limited by the textual nature of an LLM's knowledge, which often excludes critical non-textual signals such as collaborative patterns, structured attributes, and multimodal features.
+
+To address this limitation, we propose REKALM, a novel framework for enhancing LLM-based recommenders through targeted knowledge integration. Central to our approach is \textbf{knowledge lexicalization}, a process that translates heterogeneous data sources, including collaborative, factual, and multimodal knowledge, into a unified natural language format. This lexicalized corpus is then used in a \textbf{knowledge-aware instruction-tuning} phase to explicitly align the LLM's internal representations with domain-specific information. We conduct extensive experiments across four distinct domains, movies, books, music, and board games—to validate our framework. Our findings provide empirical evidence that while an LLM's inherent knowledge may suffice for universally familiar domains like movies, recommendation quality in more specialized areas is significantly improved through our knowledge integration methodology. The proposed approach outperforms strong state-of-the-art baselines, demonstrating that explicitly augmenting LLMs with lexicalized, domain-specific knowledge is a critical and effective strategy for advancing the next generation of recommender systems.
 
 ---
 
 ## Datasets Information
 The following datasets are used in this project:
 
-| Dataset       | Users | Items | Ratings | Sparsity  |
-|--------------|-------|-------|---------|-----------|
-| Last.FM      | 1881  | 2828  | 71,426  | 98.66%    |
-| DBbook       | 5660  | 6698  | 129,513 | 99.66%    |
-| MovieLens 1M | 6036  | 3081  | 946,120 | 94.91%    |
-
+| Dataset | Users | Items | Ratings | Sparsity | Images | Audio | Video |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| MovieLens 1M | 6,036 | 3,081 | 946,120 | 94.91% | 3,081 | 3,105 | 3,105 |
+| DBbook | 5,660 | 6,698 | 129,513 | 99.66% | 4,276 | - | - |
+| Last.FM | 1,881 | 2,828 | 71,426 | 98.66% | 2,820 | 2,820 | 2,742 |
+| Boardgames Geek      | 168,733     | 21,772 | 6,279,384     | 99.82% | 21,616 | - | - |
 ---
 
 ## Apriori Algorithm Parameters
 The Apriori algorithm extracts association rules using the following parameters:
 
-| Dataset       | Support  | Confidence | Extracted Rules |
-|--------------|----------|------------|-----------------|
-| Last.FM      | 0.0015   | 0.002      | 13,391          |
-| DBbook       | 0.0003   | 0.001      | 13,245          |
-| MovieLens 1M | 0.01     | 0.05       | 62,521          |
+| Dataset | Support | Confidence | Extracted Rules |
+| :--- | :---: | :---: | :---: |
+| MovieLens 1M | 0.01 | 0.05 | 62,521 |
+| DBbook | 0.0003 | 0.001 | 13,245 |
+| Last.FM | 0.0015 | 0.002 | 13,391 |
+| Boardgamegeek     | 0.001 | 0.002 | 15,328 |
 
 ---
 
